@@ -1,5 +1,6 @@
 // cm4ha - Controllino & MQTT for Home Automation
-// A simple implementation of the TWR protocol, server side
+// cm4ha is an Arduino sketch for the Controllino board, to use it in a Home Automation context, 
+// interacting with the MQTT bus. See comments in the source file for more details.
 // Contributors: Adrien van den Bossche <vandenbo@univ-tlse2.fr>
 // Code under GPLv3 license
 
