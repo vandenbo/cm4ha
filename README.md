@@ -20,17 +20,17 @@ The following typedefs are usable : `onoffTopic_t`, `pulseTopic_t` and `onOffPul
 
 ### onoffTopic_t
 
-Use this structure to describe topcis that produce a on/off on output. The payload is the awaited string to enable the `on` or the `off`
+Use this structure to describe topics that produce a on/off on output. The payload is the awaited string to enables the `on` or the `off`
 
 ### pulseTopic_t
 
-Use this structure to describe topcis that produce a short pulse on output (latching relays...). Orders are just "toggle"; see `onOffPulseTopic_t` for absolute On/Off via toggle pulse. The payload is the awaited string that enable the pulse.
+Use this structure to describe topics that produce a short pulse on output (latching relays...). Orders are just "toggle"; see `onOffPulseTopic_t` for absolute On/Off via toggle pulse. The payload is the awaited string that enables the pulse.
 
 An optional current clamp can be connected to an analog input to get the status (on/off).
 
 ### onOffPulseTopic_t
 
-Use this structure to describe topcis that produce a short pulse on output (latching relays...) to toogle current state returned by the current clamp. The payload is the awaited string that enable the ON or the OFF order.
+Use this structure to describe topics that produce a short pulse on output (latching relays...) to toogle current state returned by the current clamp. The payload is the awaited string that enables the ON or the OFF order.
 
 The current clamp must be connected to an analog input to get the status (on/off).
 
