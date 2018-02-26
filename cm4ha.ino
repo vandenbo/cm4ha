@@ -49,31 +49,52 @@ typedef struct {
 } pulseTopic_t;
 
 
+typedef struct {
+  char topic[TOPIC_MAX_LEN];        // MQTT topic
+  char payloadOn[PAYLOAD_MAX_LEN];  // MQTT on order payload
+  char payloadOff[PAYLOAD_MAX_LEN]; // MQTT on order payload
+  int pin;                          // Relay pin number
+  int state;                        // Initial state
+  int current_clamp_pin;            // Optional clamp (NO_CLAMP if not used)
+} onOffPulseTopic_t;
+
+
 // === onoffTopic_t
 // use this structure to describe topcis that produce a on/off on output
 // the payload is the awaited string to enable the on or the off
 
 onoffTopic_t onoffTopic[] = {
   // Topic as a string                           payload   controllino pin level
-  { "api/1/room/outside/lamp/applique/id/1/",    "on",     CONTROLLINO_R2, HIGH },
-  { "api/1/room/outside/lamp/applique/id/1/",    "off",    CONTROLLINO_R2, LOW  },
+  { "api/1/room/outside/lamp/wall/id/1/",        "on",     CONTROLLINO_R2, HIGH },
+  { "api/1/room/outside/lamp/wall/id/1/",        "off",    CONTROLLINO_R2, LOW  },
 };
 
 
 // === pulseTopic_t
 // use this structure to describe topcis that produce a short pulse on output (latching relays...)
+// orders are just "toggle"; see onOffPulseTopic_t for toggle+on+off
 // the payload is the awaited string that enable the pulse
 // an optional current clamp can be connected to an analog input to get the status (on/off)
 
 pulseTopic_t pulseTopic[] = {
   // Topic as a string                           payload   controllino pin   state   current_clamp_pin
-  { "api/1/room/garage/lamp/plaf/id/1/",         "toggle", CONTROLLINO_R5,   0,      CONTROLLINO_A0 },
-  { "api/1/room/entrance/lamp/plaf/id/1/",       "toggle", CONTROLLINO_R4,   0,      CONTROLLINO_A1 },
-  { "api/1/room/bedroom/lamp/plaf/id/1/",        "toggle", CONTROLLINO_R3,   0,      CONTROLLINO_A2 },
-  { "api/1/room/livingroom/ouvrant/store/id/1/", "open",   CONTROLLINO_R6,   0,      NO_CLAMP },
-  { "api/1/room/livingroom/ouvrant/store/id/1/", "close",  CONTROLLINO_R7,   0,      NO_CLAMP },
-  { "api/1/room/bedroom/ouvrant/store/id/1/",    "open",   CONTROLLINO_R8,   0,      NO_CLAMP },
-  { "api/1/room/bedroom/ouvrant/store/id/1/",    "close",  CONTROLLINO_R9,   0,      NO_CLAMP },
+  { "api/1/room/livingroom/window/store/id/1/",  "open",   CONTROLLINO_R6,   0,      NO_CLAMP },
+  { "api/1/room/livingroom/window/store/id/1/",  "close",  CONTROLLINO_R7,   0,      NO_CLAMP },
+  { "api/1/room/bedroom/window/store/id/1/",     "open",   CONTROLLINO_R8,   0,      NO_CLAMP },
+  { "api/1/room/bedroom/window/store/id/1/",     "close",  CONTROLLINO_R9,   0,      NO_CLAMP },
+};
+
+
+// === onOffPulseTopic_t
+// use this structure to describe topcis that produce a short pulse on output (latching relays...)
+// the payload is the awaited string that enable the pulse
+// an optional current clamp can be connected to an analog input to get the status (on/off)
+
+onOffPulseTopic_t onOffPulseTopic[] = {
+  // Topic as a string                           payload_on   payload_off   controllino pin   state   current_clamp_pin
+  { "api/1/room/garage/lamp/ceiling/id/1/",      "on",        "off",        CONTROLLINO_R5,   0,      CONTROLLINO_A0 },
+  { "api/1/room/entrance/lamp/ceiling/id/1/",    "on",        "off",        CONTROLLINO_R4,   0,      CONTROLLINO_A1 },
+  { "api/1/room/bedroom/lamp/ceiling/id/1/",     "on",        "off",        CONTROLLINO_R3,   0,      CONTROLLINO_A2 },
 };
 
 
@@ -82,6 +103,8 @@ void callback(char* topic, byte* payload, unsigned int length)
   char str[TOPIC_MAX_LEN];
   
   payload[length] = 0; // End of str: consider payload as a str
+
+  //// Check pulseTopic_t types ///////////////////////////////////////////
   for (int i = 0; i < (sizeof(pulseTopic) / sizeof(pulseTopic_t)); i++)
   {
     //Serial.print(i);
@@ -100,6 +123,8 @@ void callback(char* topic, byte* payload, unsigned int length)
       }
     }
   }
+
+  //// Check onoffTopic_t types ///////////////////////////////////////////
   for (int i = 0; i < (sizeof(onoffTopic) / sizeof(onoffTopic_t)); i++)
   {
     //Serial.print(i);
@@ -111,6 +136,32 @@ void callback(char* topic, byte* payload, unsigned int length)
       {
         //Serial.print(pulseTopic[i].payload);
         digitalWrite(onoffTopic[i].pin, onoffTopic[i].level);
+        break;
+      }
+    }
+  }
+
+  //// Check onOffPulseTopic_t types //////////////////////////////////////
+  for (int i = 0; i < (sizeof(onOffPulseTopic) / sizeof(onOffPulseTopic_t)); i++)
+  {
+    //Serial.print(i);
+    sprintf(str, "%s%s", onOffPulseTopic[i].topic, "request");
+    if ( strcmp(topic, str) == 0 )
+    {
+      Serial.print(onOffPulseTopic[i].topic);
+      if (
+          ( ( ( strcmp(payload, onOffPulseTopic[i].payloadOn) == 0 )
+           && ( onOffPulseTopic[i].state) == 0 ) ) 
+        ||
+          ( ( ( strcmp(payload, onOffPulseTopic[i].payloadOff) == 0 )
+           && ( onOffPulseTopic[i].state) == 1 ) ) 
+        )
+      {
+        //Serial.print(pulseTopic[i].payload);
+        digitalWrite(onOffPulseTopic[i].pin, HIGH);
+        delay(PULSE_DURATION);
+        digitalWrite(onOffPulseTopic[i].pin, LOW);
+        delay(PULSE_DURATION);
         break;
       }
     }
@@ -238,7 +289,7 @@ void loop()
   }
   client.loop();
 
-  // For each pulse output, get on/off status using the current clamp, if used
+  // For each pulseTopic_t output, get on/off status using the current clamp, if used
   for (int i = 0; i < (sizeof(pulseTopic) / sizeof(pulseTopic_t)); i++)
   {
     if ( pulseTopic[i].current_clamp_pin != NO_CLAMP )
@@ -254,6 +305,28 @@ void loop()
         else sprintf(payload, "off");
         client.publish(topic, payload, true); // Send with retained flag true
         pulseTopic[i].state = state;      
+      }
+      //Serial.print(i); Serial.print("\t"); Serial.print(max_value); 
+      //Serial.print("\t"); Serial.println(pulseTopic[i].state);
+    }
+  }
+
+  // For each onOffPulseTopic_t output, get on/off status using the current clamp, if used
+  for (int i = 0; i < (sizeof(onOffPulseTopic) / sizeof(onOffPulseTopic_t)); i++)
+  {
+    if ( onOffPulseTopic[i].current_clamp_pin != NO_CLAMP )
+    {
+      int state;
+      getSamples(samples, onOffPulseTopic[i].current_clamp_pin);
+      max_value = getSampleMax(samples);
+      state = (max_value > CLAMP_MIN_VALUE)? 1:0;
+      if ( state != onOffPulseTopic[i].state )
+      {
+        sprintf(topic, "%s%s", onOffPulseTopic[i].topic, "indication");
+        if ( state ) sprintf(payload, "on");
+        else sprintf(payload, "off");
+        client.publish(topic, payload, true); // Send with retained flag true
+        onOffPulseTopic[i].state = state;      
       }
       //Serial.print(i); Serial.print("\t"); Serial.print(max_value); 
       //Serial.print("\t"); Serial.println(pulseTopic[i].state);
