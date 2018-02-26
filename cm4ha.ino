@@ -42,7 +42,7 @@ typedef struct {
 
 typedef struct {
   char topic[TOPIC_MAX_LEN];      // MQTT topic
-  char payload[PAYLOAD_MAX_LEN];  // MQTT payload
+  char payload[PAYLOAD_MAX_LEN];  // MQTT payload to toggle
   int pin;                        // Relay pin number
   int state;                      // Initial state
   int current_clamp_pin;          // Optional clamp (NO_CLAMP if not used)
@@ -51,8 +51,8 @@ typedef struct {
 
 typedef struct {
   char topic[TOPIC_MAX_LEN];        // MQTT topic
-  char payloadOn[PAYLOAD_MAX_LEN];  // MQTT on order payload
-  char payloadOff[PAYLOAD_MAX_LEN]; // MQTT on order payload
+  char payloadOn[PAYLOAD_MAX_LEN];  // MQTT payload for ON order
+  char payloadOff[PAYLOAD_MAX_LEN]; // MQTT payload for OFF order
   int pin;                          // Relay pin number
   int state;                        // Initial state
   int current_clamp_pin;            // Optional clamp (NO_CLAMP if not used)
@@ -86,9 +86,9 @@ pulseTopic_t pulseTopic[] = {
 
 
 // === onOffPulseTopic_t
-// use this structure to describe topcis that produce a short pulse on output (latching relays...)
-// the payload is the awaited string that enable the pulse
-// an optional current clamp can be connected to an analog input to get the status (on/off)
+// use this structure to describe topcis that produce a short pulse on output (latching relays...) to toogle current state
+// returned by the clamp. The payload is the awaited string that enable the ON or the OFF order
+// the current clamp must be connected to an analog input to get the status (on/off).
 
 onOffPulseTopic_t onOffPulseTopic[] = {
   // Topic as a string                           payload_on   payload_off   controllino pin   state   current_clamp_pin
