@@ -77,11 +77,11 @@ onoffTopic_t onoffTopic[] = {
 // an optional current clamp can be connected to an analog input to get the status (on/off)
 
 pulseTopic_t pulseTopic[] = {
-  // Topic as a string                           payload   controllino pin   state   current_clamp_pin
-  { "api/1/room/livingroom/window/store/id/1/",  "open",   CONTROLLINO_R6,   0,      NO_CLAMP },
-  { "api/1/room/livingroom/window/store/id/1/",  "close",  CONTROLLINO_R7,   0,      NO_CLAMP },
-  { "api/1/room/bedroom/window/store/id/1/",     "open",   CONTROLLINO_R8,   0,      NO_CLAMP },
-  { "api/1/room/bedroom/window/store/id/1/",     "close",  CONTROLLINO_R9,   0,      NO_CLAMP },
+  // Topic as a string                             payload   controllino pin   state   current_clamp_pin
+  { "api/1/room/livingroom/window/shutter/id/1/",  "open",   CONTROLLINO_R6,   0,      NO_CLAMP },
+  { "api/1/room/livingroom/window/shutter/id/1/",  "close",  CONTROLLINO_R7,   0,      NO_CLAMP },
+  { "api/1/room/bedroom/window/shutter/id/1/",     "open",   CONTROLLINO_R8,   0,      NO_CLAMP },
+  { "api/1/room/bedroom/window/shutter/id/1/",     "close",  CONTROLLINO_R9,   0,      NO_CLAMP },
 };
 
 
