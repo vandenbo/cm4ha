@@ -38,7 +38,7 @@ The current clamp must be connected to an analog input to get the status (on/off
 
 In the sketch example :
 * a on/off lamp is connected on the R2 relay and is controlled via the topic `api/1/room/outside/lamp/wall/id/1/request`
-* two window stores are connected on the R6, R7, R8, R9 relays (1-open, 1-close, 2-open and 2-close) and are controlled via the topics `api/1/room/livingroom/window/store/id/1/request` and `api/1/room/bedroom/window/store/id/1/request`
+* two window rolling shutters are connected on the R6, R7, R8, R9 relays (1-open, 1-close, 2-open and 2-close) and are controlled via the topics `api/1/room/livingroom/window/shutter/id/1/request` and `api/1/room/bedroom/window/shutter/id/1/request`
 * three latching relays lamps are connected on the R3, R4, R5 relays and are are controlled via the topics `api/1/room/garage/lamp/ceiling/id/1/request`, `api/1/room/entrance/lamp/ceiling/id/1/request` and `api/1/room/bedroom/lamp/ceiling/id/1/request`. The three current sensors are connected on analog input A0, A1 and A2.
 
 ## For more details
