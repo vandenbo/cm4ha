@@ -136,8 +136,13 @@ void callback(char* topic, byte* payload, unsigned int length)
       //Serial.print(pulseTopic[i].topic);
       if ( strcmp(payload, onoffTopic[i].payload) == 0 )
       {
+        char topic_indication[TOPIC_MAX_LEN];
         //Serial.print(pulseTopic[i].payload);
         digitalWrite(onoffTopic[i].pin, onoffTopic[i].level);
+
+        // Immediately send confirmation on the corresponding indication topic
+        sprintf(topic_indication, "%s%s", onoffTopic[i].topic, "indication");  
+        client.publish(topic_indication, onoffTopic[i].payload, true); // Send with retained flag true
         break;
       }
     }
