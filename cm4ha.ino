@@ -24,8 +24,10 @@
 // 50 samples every 0.5ms = 25ms: enough for 50Hz/20ms
 
 byte mac[] = {  0x28, 0x18, 0x92, 0x01, 0xFE, 0xEF }; // MAC address of the controllino
-IPAddress ip(192, 168, 95, 27); // IP address of the controllino
-IPAddress server(192, 168, 95, 232); // IP address of the MQTT broker
+IPAddress ip(192, 168, 88, 27); // IP address of the controllino
+IPAddress server(192, 168, 89, 10); // IP address of the MQTT broker
+IPAddress dns_server(192, 168, 88, 254); // IP address of the MQTT broker
+IPAddress gateway(192, 168, 88, 254); // IP address of the MQTT broker
 
 EthernetClient ethClient;
 PubSubClient client(ethClient);
@@ -65,8 +67,8 @@ typedef struct {
 
 onoffTopic_t onoffTopic[] = {
   // Topic as a string                           payload   controllino pin level
-  { "api/1/room/outside/lamp/wall/id/1/",        "on",     CONTROLLINO_R2, HIGH },
-  { "api/1/room/outside/lamp/wall/id/1/",        "off",    CONTROLLINO_R2, LOW  },
+  { "api/1/room/outdoor/lamp/wall/id/1/",        "on",     CONTROLLINO_R2, HIGH },
+  { "api/1/room/outdoor/lamp/wall/id/1/",        "off",    CONTROLLINO_R2, LOW  },
 };
 
 
@@ -273,7 +275,7 @@ void setup()
   client.setServer(server, 1883);
   client.setCallback(callback);
 
-  Ethernet.begin(mac, ip);
+  Ethernet.begin(mac, ip, dns_server, gateway);
   delay(2000);
 }
 
